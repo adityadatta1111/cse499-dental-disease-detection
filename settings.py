@@ -22,4 +22,4 @@ MODEL_DIR = ROOT / 'weights'
 
 DETECTION_MODEL = MODEL_DIR / 'best.pt'
 
-SEGMENTATION_MODEL = MODEL_DIR / 'sam_b.pt'
+SEGMENTATION_MODEL = MODEL_DIR / 'yolov8s-seg.pt'
