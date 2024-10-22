@@ -79,6 +79,7 @@ if source_radio == settings.IMAGE:
                     with st.expander("Detectioin Results"):
                         for box in boxes:
                             st.write(box.data)
+                            class_label = model.names[int(box.cls)]
+                            st.write(class_label)
                 except Exception as ex:
                     st.write("No image has been uploaded.")
-                    
