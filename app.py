@@ -6,6 +6,7 @@ import helper
 from PIL import Image
 import os
 from streamlit_cropper import st_cropper
+import time
 
 st.set_page_config(
     page_title="Dental Image Segmentation and Detection",
@@ -21,8 +22,12 @@ model_type = st.sidebar.radio(
     "Choose Task", ['Detection', 'Segmentation']
 )
 
+# Default confidence value is 0.30
 confidence = float(st.sidebar.slider(
-    "Confidence Threshold (In Percentage %)", 25, 50, 100
+    "Confidence Threshold (In Percentage %)",
+    min_value=25,
+    max_value=100,
+    value=30
 )) / 100
 
 if model_type == 'Detection':
@@ -60,7 +65,18 @@ if source_radio == settings.IMAGE:
                          use_column_width=True)
             else:
                 uploaded_image = PIL.Image.open(source_img)
+                # Placeholder for the progress bar
+                progress_bar = st.progress(0)
+
+                if uploaded_image is not None:
+
+                    # Upload progress
+                    for percent_complete in range(0, 101, 10):
+                        time.sleep(0.1)  # Simulate upload delay
+                        progress_bar.progress(percent_complete)
+                    progress_bar.empty()
                 st.image(source_img, caption="Uploaded Image Successfully")
+                
         except Exception as ex:
             st.error(f"Error loading image: {ex}")
 
@@ -119,23 +135,35 @@ if source_radio == settings.IMAGE:
             path = os.path.join("custom-labels", f"{filename}.jpg")
             image.save(path)
             st.success(f"Cropped image saved as {path}")
-
+        st.divider()
         # Streamlit UI setup
         st.title("Annonation Tool")
+
+        # Sidebar controls
+        realtime_update = st.checkbox(
+            "Update in Real Time", value=True)
+        box_color = st.color_picker("Box Color", value='#0b4cd9')
+        aspect_choice = st.radio("Aspect Ratio", options=[
+            "1:1", "16:9", "4:3", "2:3", "Free"])
+        aspect_dict = {"1:1": (1, 1), "16:9": (
+            16, 9), "4:3": (4, 3), "2:3": (2, 3), "Free": None}
+        aspect_ratio = aspect_dict[aspect_choice]
 
         # Upload image
         img_file = st.file_uploader(
             "Upload an Image", type=['png', 'jpg', 'jpeg'])
+        
+        # Placeholder for the progress bar
+        progress_bar = st.progress(0)
 
-        # Sidebar controls
-        realtime_update = st.sidebar.checkbox(
-            "Update in Real Time", value=True)
-        box_color = st.sidebar.color_picker("Box Color", value='#0b4cd9')
-        aspect_choice = st.sidebar.radio("Aspect Ratio", options=[
-                                         "1:1", "16:9", "4:3", "2:3", "Free"])
-        aspect_dict = {"1:1": (1, 1), "16:9": (
-            16, 9), "4:3": (4, 3), "2:3": (2, 3), "Free": None}
-        aspect_ratio = aspect_dict[aspect_choice]
+        if img_file is not None:
+
+            # Upload progress
+            for percent_complete in range(0, 101, 10):
+                time.sleep(0.1)  # Simulate upload delay
+                progress_bar.progress(percent_complete)
+            st.image(img_file, width=500, caption="Uploaded Image Successfully")
+            progress_bar.empty()
 
         if img_file:
             try:
@@ -144,13 +172,13 @@ if source_radio == settings.IMAGE:
                 img_width, img_height = img.size
 
                 st.write("Original Image:")
-                st.image(img, use_column_width=True)
+                st.image(img, width=500)
 
                 # Cropping using Streamlit cropper tool
                 cropped_img = st_cropper(
                     img, realtime_update=realtime_update, box_color=box_color, aspect_ratio=aspect_ratio)
                 st.write("Cropped Image Preview:")
-                st.image(cropped_img, use_column_width=True)
+                st.image(cropped_img, width=500)
 
                 # Input for label
                 label = st.text_input(
