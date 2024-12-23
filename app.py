@@ -65,7 +65,7 @@ if source_radio == settings.IMAGE:
         "Choose an image.", type=("jpg", "jpeg", "png", "bmp", "webp")
     )
 
-    col1, col2, col3 = st.columns(3)
+    col1, col2 = st.columns(2)
 
     with col1:
         try:
@@ -165,19 +165,20 @@ if source_radio == settings.IMAGE:
                 img_file = Image.open(img)
                 img_width, img_height = img_file.size
 
-                st.write("Predicted Image:")
+                st.header("Predicted Image:")
                 st.image(img_file, width=300)
 
-                st.write("Edit Bounding Boxes:")
+                st.header("Edit Bounding Boxes:")
                 # Cropping using Streamlit cropper tool
                 st.session_state.cropped_img = st_cropper(
                     img_file, realtime_update=realtime_update, box_color=box_color, aspect_ratio=aspect_ratio)
-                st.write("Cropped Image Preview:")
+                st.header("Cropped Image Preview:")
                 st.image(st.session_state.cropped_img, width=300)
 
                 # Input for label
-                st.session_state.label = st.text_input("Enter Label for the bounding box and then hit enter:", st.session_state.label)
-                st.write(f"Entered Label: '{st.session_state.label}'")
+                st.header("Enter Label for the bounding box and then hit enter:")
+                st.session_state.label = st.text_input("Enter Label here: ", st.session_state.label)
+                st.header(f"Entered Label:'{st.session_state.label}'")
 
                 # Check if label is empty
                 if not st.session_state.label:
