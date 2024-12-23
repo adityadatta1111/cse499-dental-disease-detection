@@ -107,6 +107,9 @@ if source_radio == settings.IMAGE:
                 res_plotted = res[0].plot()[:, :, ::-1]
                 st.image(res_plotted, caption='Detected Image',
                          use_column_width=True)
+                res = model.predict(uploaded_image, conf=confidence)
+                boxes = res[0].boxes
+                res_plotted = res[0].plot(labels=False)[:, :, ::-1]
                 st.session_state.img_file = Image.fromarray(res_plotted)  # Update session state with detected image
                 st.session_state.img_file.save("detected_image.jpg")
                 Image.open("detected_image.jpg")
@@ -165,11 +168,12 @@ if source_radio == settings.IMAGE:
                 st.write("Predicted Image:")
                 st.image(img_file, width=300)
 
+                st.write("Edit Bounding Boxes:")
                 # Cropping using Streamlit cropper tool
                 st.session_state.cropped_img = st_cropper(
                     img_file, realtime_update=realtime_update, box_color=box_color, aspect_ratio=aspect_ratio)
                 st.write("Cropped Image Preview:")
-                st.image(st.session_state.cropped_img, width=500)
+                st.image(st.session_state.cropped_img, width=300)
 
                 # Input for label
                 st.session_state.label = st.text_input("Enter Label for the bounding box and then hit enter:", st.session_state.label)
